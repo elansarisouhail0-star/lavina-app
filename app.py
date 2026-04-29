@@ -192,6 +192,19 @@ def delete_diagnostic(diagnostic_id):
 # -----------------------------
 # MAIN (Railway)
 # -----------------------------
+@app.route("/users")
+def users():
+    user = current_user()
+    if not user:
+        return redirect(url_for("login"))
+
+    conn = db()
+    users_list = conn.execute(
+        "SELECT id, username, role, created_at FROM users ORDER BY created_at DESC"
+    ).fetchall()
+    conn.close()
+
+    return render_template("users.html", users=users_list)
 if __name__ == "__main__":
     init_db()
     port = int(os.environ.get("PORT", 5000))
