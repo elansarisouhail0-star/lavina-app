@@ -1,0 +1,39 @@
+{% extends "layout.html" %}
+{% block content %}
+<section class="hero">
+  <div>
+    <h1>Utilisateurs</h1>
+    <p>Créer des comptes pour plusieurs auditeurs ou responsables maintenance.</p>
+  </div>
+</section>
+
+<section class="grid-two">
+  <div class="card">
+    <h2>Créer un utilisateur</h2>
+    <form method="post" class="form-grid">
+      <label>Nom d’utilisateur</label>
+      <input name="username" required>
+      <label>Mot de passe</label>
+      <input name="password" type="password" required>
+      <label>Rôle</label>
+      <select name="role">
+        <option value="user">Utilisateur</option>
+        <option value="admin">Administrateur</option>
+      </select>
+      <button class="primary">Créer</button>
+    </form>
+  </div>
+
+  <div class="card">
+    <h2>Comptes existants</h2>
+    <table>
+      <thead><tr><th>Utilisateur</th><th>Rôle</th><th>Créé le</th></tr></thead>
+      <tbody>
+        {% for u in users %}
+        <tr><td>{{ u.username }}</td><td>{{ u.role }}</td><td>{{ u.created_at }}</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</section>
+{% endblock %}
