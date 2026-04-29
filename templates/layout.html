@@ -4,7 +4,74 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>{{ title or "Méthode LAVINA" }}</title>
-  <link rel="stylesheet" href="{{ url_for('static', filename='app.css') }}">
+  <style>
+*{box-sizing:border-box}
+body{
+  margin:0;
+  font-family:Arial, sans-serif;
+  background:linear-gradient(135deg,#06172d,#172554,#1e293b);
+  color:#0f172a;
+}
+.topbar{
+  background:#0f172a;
+  color:white;
+  padding:18px 28px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+}
+.brand{font-weight:900;font-size:22px}
+.navlinks a,.user-chip{
+  color:white;
+  text-decoration:none;
+  background:rgba(255,255,255,.12);
+  padding:10px 16px;
+  border-radius:25px;
+  margin-left:8px;
+}
+.page{padding:32px 24px}
+.hero,.card,.login-card{
+  background:#fff;
+  border-radius:28px;
+  padding:28px;
+  margin-bottom:24px;
+  box-shadow:0 18px 40px rgba(0,0,0,.18);
+}
+h1{font-size:42px;margin:0 0 12px}
+p{color:#526985;font-size:18px}
+.button,.primary{
+  background:#ff6b18;
+  color:white;
+  padding:14px 24px;
+  border-radius:18px;
+  text-decoration:none;
+  border:none;
+  font-weight:bold;
+}
+.danger{
+  background:#dc2626;
+  color:white;
+  padding:10px 16px;
+  border:none;
+  border-radius:14px;
+}
+table{width:100%;border-collapse:collapse}
+th{
+  background:#0f172a;
+  color:white;
+  padding:14px;
+}
+td{
+  padding:14px;
+  border-bottom:1px solid #ddd;
+}
+input{
+  padding:12px;
+  border-radius:10px;
+  border:1px solid #ccc;
+  margin:6px;
+}
+</style>
 </head>
 <body>
   <nav class="topbar">
