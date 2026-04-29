@@ -1,0 +1,392 @@
+{% extends "layout.html" %}
+{% block content %}
+<section class="diagnostic-hero">
+  <div>
+    <h1>{{ diagnostic.title }}</h1>
+    <p>🏭 {{ diagnostic.company or "Société non renseignée" }} · 📍 {{ diagnostic.site or "Site non renseigné" }} · 👤 {{ diagnostic.auditor or "Auditeur non renseigné" }}</p>
+  </div>
+  <div class="score-total">
+    <span id="totalScore">0</span><small>/ <span id="totalMax">3000</span> pts</small>
+    <strong><span id="globalPercent">0.0</span>%</strong>
+  </div>
+</section>
+
+<section class="toolbar">
+  <button class="primary" id="saveBtn">💾 Sauvegarder</button>
+  <button class="secondary" id="calculateAllBtn">📈 Recalculer</button>
+  <button class="secondary" id="printBtn">🖨️ Imprimer / PDF</button>
+  <button class="danger" id="resetAllBtn">⟳ Réinitialiser les réponses</button>
+  <span id="saveStatus"></span>
+</section>
+
+<div id="sectionsContainer"></div>
+
+<section class="card">
+  <h2>📋 Tableau de dépouillement</h2>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Domaine</th><th>Score obtenu</th><th>Max possible</th><th>%</th></tr></thead>
+      <tbody id="summaryBody"></tbody>
+    </table>
+  </div>
+</section>
+
+<script>
+const sectionsData = [
+  { name:"1. Organisation générale", maxPoints:250, questions:[
+    ["Avez vous défini par écrit et fait approuver l’organisation de la fonction maintenance ?",30,0,0,0,0],
+    ["Les responsabilités et les tâches définies dans l’organisation sont-elles vérifiées périodiquement pour adaptation ?",10,0,0,0,0],
+    ["Les responsabilités et les tâches des contremaîtres et agents de maîtrise sont-elles clairement définies ?",20,0,0,0,0],
+    ["Le personnel d’encadrement et de supervision est il suffisant ?",30,20,0,10,0],
+    ["L’activité de chaque agent de maîtrise est elle encadrée par un budget de fonctionnement ?",10,0,5,0,0],
+    ["Y a-t-il quelqu’un de désigné pour assurer la coordination des approvisionnements, des travaux, des études d’installation et de formation ?",20,15,0,5,0],
+    ["Existe-t-il des fiches de fonction pour chacun des postes d’exécutant ?",20,0,10,0,0],
+    ["Les agents exploitant disposent-il de consignes écrites pour réaliser les tâches de maintenance de 1er niveau ?",30,20,0,10,0],
+    ["Vous réunissez-vous périodiquement avec l’exploitant pour examiner les travaux à effectuer ?",20,0,5,0,0],
+    ["Les objectifs du service sont-ils écrits et sont-ils contrôlés régulièrement ?",30,20,0,5,0],
+    ["Êtes vous consulté par l’exploitant ou par les services d’ingénierie lors de l’étude ou de l’installation de nouveaux équipements ?",30,20,0,10,0]
+  ]},
+  { name:"2. Méthodes de travail", maxPoints:250, questions:[
+    ["Pour les interventions importantes en volume d’heures et/ou répétitives, privilégie-t-on la préparation du travail ?",30,20,0,10,0],
+    ["Utilisez-vous des supports imprimés pour préparer les travaux ou établir des devis ?",20,0,10,0,0],
+    ["Disposez-vous de modes opératoires écrits pour les travaux complexes ou délicats ?",20,0,10,0,0],
+    ["Avez vous une procédure écrite définissant les autorisations du travail pour les travaux à risques ?",25,0,0,0,0],
+    ["Conservez-vous et classez-vous de manière particulière les dossiers de préparation ?",15,10,0,5,0],
+    ["Y a-t-il des actions visant à standardiser les organes et pièces ?",30,20,0,5,0],
+    ["Avez-vous des méthodes d’estimation des temps autres que l’estimation globale ?",10,0,5,0,0],
+    ["Utilisez vous la méthode PERT ou une démarche analogue pour la préparation des travaux longs ?",20,10,0,5,0],
+    ["Avez vous recours à des méthodologies formalisées de dépannage ?",30,20,0,10,0],
+    ["Réservez vous les pièces en magasin, faîtes vous préparer des kits avant vos interventions ?",30,20,0,10,0],
+    ["L’ensemble de la documentation est-elle correctement classée et facilement accessible ?",20,10,0,5,0]
+  ]},
+  { name:"3. Suivi technique des équipements", maxPoints:250, questions:[
+    ["Disposez-vous d’une liste récapitulative par emplacement des équipements de votre unité ?",30,20,0,10,0],
+    ["Chaque équipement possède-t-il un numéro d’identification unique ?",20,10,0,5,0],
+    ["Sur le site, tout équipement a-t-il son numéro d’identification clairement signalé ?",15,10,0,5,0],
+    ["Les modifications, nouvelles installations ou suppressions d’équipements sont elles enregistrées systématiquement ?",15,10,0,5,0],
+    ["Un dossier technique est il ouvert pour chaque équipement ou installation ?",30,20,0,10,0],
+    ["Possédez-vous un historique des travaux pour chaque équipement ?",30,20,0,10,0],
+    ["Disposez-vous des informations heures, pièces et coûts, équipement par équipement ?",40,25,0,10,0],
+    ["Y a-t-il un responsable de la tenue de l’historique des travaux ?",20,15,0,5,0],
+    ["Assurez-vous un suivi formel des comptes rendus de visites ou inspections préventives ?",30,0,15,0,0],
+    ["Les historiques sont ils analysés une fois par an ?",20,15,0,5,0]
+  ]},
+  { name:"4. Gestion portefeuille de travaux", maxPoints:300, questions:[
+    ["Avez vous un programme établi de maintenance préventive ?",40,25,0,10,0],
+    ["Disposez vous de fiches ou check-lists écrites de maintenance préventive ?",20,10,0,5,0],
+    ["Existe-t-il un responsable de l’ensemble des actions de maintenance préventive ?",10,0,0,0,0],
+    ["Les utilisateurs des équipements ont-ils des responsabilités en réglage et maintenance de routine ?",20,15,0,5,0],
+    ["Avez-vous un système d’enregistrement des demandes de travaux ?",40,25,0,10,0],
+    ["Y a-t-il une personne responsable de l’ordonnancement des travaux ?",20,10,0,5,0],
+    ["Avez-vous défini des règles d’affectation des travaux selon les priorités ?",30,20,0,10,0],
+    ["Connaissez-vous en permanence la charge de travail en portefeuille ?",30,15,0,5,0],
+    ["Existe-t-il un bon de travail utilisé systématiquement pour toute intervention ?",30,15,0,5,0],
+    ["Les agents de maîtrise se rencontrent ils périodiquement pour priorités et planning ?",30,20,0,10,0],
+    ["Disposez-vous d’un planning hebdomadaire de lancement des travaux ?",30,0,15,0,0]
+  ]},
+  { name:"5. Stock de pièces de rechange", maxPoints:200, questions:[
+    ["Disposez-vous d’un magasin fermé pour stocker les pièces de rechange ?",20,0,0,0,0],
+    ["Disposez-vous de libre service pour les articles de consommation courante ?",10,0,5,0,0],
+    ["Tenez-vous à jour les fiches de stock ?",30,20,0,10,0],
+    ["Éliminez-vous systématiquement les pièces obsolètes ?",10,0,5,0,0],
+    ["Suivez-vous la consommation des articles par équipement ?",10,0,5,0,0],
+    ["La valeur et le nombre d’articles en stock est il facilement disponible ?",20,0,0,0,0],
+    ["Les pièces sont elles bien rangées et identifiées ?",20,0,0,0,0],
+    ["A-t-on défini le seuil de déclenchement et les quantités à réapprovisionner ?",20,15,0,5,0],
+    ["Les pièces interchangeables sont elles identifiées ?",30,20,0,8,0],
+    ["Les procédures d’approvisionnement sont elles suffisamment souples pour stocker chez le fournisseur ?",30,20,0,10,0]
+  ]},
+  { name:"6. Achats et approvisionnement", maxPoints:200, questions:[
+    ["A-t-on une procédure formalisée d’émission des demandes de passation des commandes ?",20,0,10,0,0],
+    ["Y a-t-il une personne chargée du suivi des demandes d’achat ?",20,10,0,5,0],
+    ["Toute demande de pièce à coût élevé requiert-elle l’accord du responsable ?",30,0,15,0,0],
+    ["Les délais d’émission d’une commande sont-ils suffisamment courts ?",30,0,15,0,0],
+    ["A-t-on des marchés négociés pour les articles standard ou consommables ?",30,20,0,10,0],
+    ["Pour les articles spécifiques, passez vous par des fournisseurs autres que le constructeur ?",30,0,15,0,0],
+    ["Disposez-vous d’un processus d’homologation des fournisseurs ?",20,10,0,5,0],
+    ["Y a-t-il une grande cohésion entre achats et maintenance lors des négociations ?",20,10,0,5,0]
+  ]},
+  { name:"7. Organisation atelier maintenance", maxPoints:200, questions:[
+    ["L’espace atelier maintenance est il suffisant pour les travaux demandés ?",30,0,15,0,0],
+    ["Votre atelier pourrait-il être mieux équipé par rapport aux équipements à entretenir ?",0,10,0,30,40],
+    ["Les bureaux de la maîtrise ou superviseurs sont-ils de plain-pied sur l’atelier ?",20,0,10,0,0],
+    ["Votre atelier dispose t-il de chauffage et d’air conditionné ?",10,0,5,0,0],
+    ["Le magasin d’outillage et pièces de rechange est-il au voisinage de l’atelier ?",20,15,0,5,0],
+    ["Y a-t-il un responsable du magasin ?",10,0,5,0,0],
+    ["Le magasin d’outillage et pièces est il affecté exclusivement à la maintenance ?",20,0,10,0,0],
+    ["Chaque exécutant dispose t-il d’un poste de travail bien identifié ?",20,0,10,0,0],
+    ["Les moyens de manutention d’atelier sont ils adaptés ?",30,20,0,10,0]
+  ]},
+  { name:"8. Outillages et appareils de mesure", maxPoints:200, questions:[
+    ["Disposez-vous d’un inventaire d’outillages et équipements de tests ?",20,10,0,5,0],
+    ["Cet inventaire est-il mis à jour régulièrement ?",15,10,0,5,0],
+    ["Disposez-vous de tous les outillages spéciaux et équipements de test nécessaires ?",30,20,0,10,0],
+    ["Exécutez-vous la maintenance préventive à l’aide des équipements de tests ?",25,15,0,5,0],
+    ["Les outillages et équipements de test sont ils disponibles en quantité suffisante ?",25,15,0,5,0],
+    ["L’étalonnage des appareils de mesure est il bien défini et effectué ?",15,0,5,0,0],
+    ["Avez-vous défini par écrit le processus de mise à disposition des outillages ?",10,0,0,0,0],
+    ["Chaque exécutant dispose t-il d’une boite à outils personnelle ?",30,0,15,0,0],
+    ["Disposez-vous de suffisamment de moyens de manutention sur site ?",30,20,0,10,0]
+  ]},
+  { name:"9. Documentation technique", maxPoints:200, questions:[
+    ["Disposez vous d’une documentation technique générale suffisante ?",20,15,0,5,0],
+    ["Pour tout équipement, disposez vous des plans d’ensemble et schémas nécessaires ?",40,30,0,15,0],
+    ["Les notices techniques et listes de pièces détachées sont elles disponibles ?",30,20,0,10,0],
+    ["Les plans des installations sont ils facilement accessibles et utilisables ?",30,20,0,10,0],
+    ["Les plans et schémas sont ils mis à jour après modifications ?",30,20,0,10,0],
+    ["Enregistre-t-on les travaux de modification et classe-t-on les dossiers correspondants ?",20,15,0,5,0],
+    ["Les contrats de maintenance sont ils facilement accessibles ?",20,15,0,5,0],
+    ["Les moyens de reprographie, classement et archivage sont ils suffisants ?",10,0,5,0,0]
+  ]},
+  { name:"10. Personnel et formation", maxPoints:400, questions:[
+    ["Le climat de travail est il généralement positif ?",40,25,0,10,0],
+    ["Les agents de maîtrise encadrent ils correctement les travaux ?",30,20,0,10,0],
+    ["Les problèmes sont ils souvent examinés en groupe incluant les exécutants ?",30,20,0,10,0],
+    ["Existe-t-il des entretiens annuels d’appréciation du personnel ?",20,15,0,5,0],
+    ["La maîtrise et les exécutants sont ils suffisamment disponibles ?",30,20,0,10,0],
+    ["La compétence technique de votre personnel est-elle satisfaisante ?",50,35,0,15,0],
+    ["Le personnel a-t-il l’initiative nécessaire au quotidien ?",30,20,0,10,0],
+    ["Les agents de maîtrise assurent ils le perfectionnement technique régulier ?",30,0,15,0,0],
+    ["Les agents de maîtrise reçoivent ils une formation aux nouvelles technologies ?",30,0,15,0,0],
+    ["Votre personnel reçoit il régulièrement une formation à la sécurité ?",30,20,0,5,0],
+    ["La formation du personnel est elle programmée et maîtrisée par la maintenance ?",20,15,0,5,0],
+    ["Les qualifications et habilitations sont elles suivies rigoureusement ?",20,15,0,5,0],
+    ["Avez-vous des pertes importantes de temps productif dues aux retards ou absences ?",0,10,0,20,30],
+    ["Les relations du personnel avec les services clients sont elles bonnes ?",10,0,5,0,0]
+  ]},
+  { name:"11. Sous-traitance", maxPoints:250, questions:[
+    ["Avez-vous un processus d’évaluation formelle des sous-traitants ?",10,0,0,0,0],
+    ["Les descriptifs de travaux et cahiers des charges sont ils soigneusement élaborés ?",40,30,0,15,0],
+    ["La sélection des sous-traitants s’effectue-t-elle sur des critères de technicité et compétence ?",20,15,0,5,0],
+    ["Avez vous localement la possibilité de recours à plusieurs entreprises sous-traitantes ?",20,15,0,5,0],
+    ["Sous-traitez vous les tâches pour lesquelles vous ne disposez pas d’une technicité suffisante ?",30,20,0,10,0],
+    ["Vos contrats avec les sous-traitants incluent ils des clauses de résultats ?",20,15,0,5,0],
+    ["Développez vous l’assurance qualité et le partenariat avec les sous-traitants ?",30,20,0,10,0],
+    ["Créez-vous et mettez vous à jour un dossier par affaire selon une procédure ?",20,15,0,5,0],
+    ["Le suivi et la réception des travaux sous-traités sont ils effectués par une personne désignée ?",30,20,0,10,0],
+    ["Disposez vous d’une documentation propre à faciliter la maintenance par des entreprises extérieures ?",30,20,0,10,0]
+  ]},
+  { name:"12. Contrôle de l’activité", maxPoints:300, questions:[
+    ["Disposez-vous d’un tableau de bord permettant de décider des actions correctives ?",40,30,0,15,0],
+    ["Existe-t-il des rapports réguliers de suivi des heures et coûts ?",40,30,0,15,0],
+    ["Les performances du service sont elles suivies ?",40,30,0,15,0],
+    ["L’efficacité du potentiel maintenance est elle contrôlée ?",30,20,0,10,0],
+    ["Maîtrisez-vous votre charge de travail ?",30,20,0,10,0],
+    ["Disposez vous des coûts de maintenance équipement par équipement ?",30,20,0,10,0],
+    ["Le service maintenance dispose-t-il d’un outil de gestion informatisée de l’activité ?",30,0,15,0,0],
+    ["Disposez-vous des informations de synthèse dans un délai suffisamment court ?",30,20,0,10,0],
+    ["Émettez vous régulièrement un compte rendu d’activité ?",30,20,0,10,0]
+  ]}
+];
+
+const savedAnswers = JSON.parse({{ diagnostic.answers_json|tojson }} || "{}");
+const diagnosticId = {{ diagnostic.id }};
+
+const sectionIcons = ["🏢","🧰","🛠️","📅","📦","🧾","🏭","🔩","📚","👷","🤝","📊"];
+const choices = [
+  { key: "oui", label: "Oui", index: 1 },
+  { key: "poui", label: "Plutôt oui", index: 2 },
+  { key: "neutre", label: "Ni oui, ni non", index: 3 },
+  { key: "pnon", label: "Plutôt non", index: 4 },
+  { key: "non", label: "Non", index: 5 }
+];
+
+function pointsFor(questionArray, choice) {
+  return Number(questionArray[choice.index]) || 0;
+}
+
+function buildUI() {
+  const container = document.getElementById("sectionsContainer");
+  container.innerHTML = "";
+
+  sectionsData.forEach((section, idx) => {
+    const card = document.createElement("section");
+    card.className = "section-card";
+
+    const header = document.createElement("div");
+    header.className = "section-header";
+    header.innerHTML = `
+      <div class="section-title">
+        <span class="section-icon">${sectionIcons[idx] || "⚙️"}</span>
+        <span>${section.name}</span>
+      </div>
+      <span class="badge-score" id="badge-${idx}">0 / ${section.maxPoints} pts</span>
+    `;
+
+    const content = document.createElement("div");
+    content.className = "section-content open";
+    content.id = `content-${idx}`;
+
+    section.questions.forEach((q, qidx) => {
+      const row = document.createElement("div");
+      row.className = "question-row";
+
+      const qText = document.createElement("div");
+      qText.className = "question-text";
+      qText.textContent = `${qidx + 1}. ${q[0]}`;
+
+      const radioDiv = document.createElement("div");
+      radioDiv.className = "radio-group";
+
+      choices.forEach(choice => {
+        const pts = pointsFor(q, choice);
+        const id = `s${idx}_q${qidx}_${choice.key}`;
+
+        const label = document.createElement("label");
+        label.htmlFor = id;
+
+        const input = document.createElement("input");
+        input.type = "radio";
+        input.name = `s${idx}_q${qidx}`;
+        input.value = choice.key;
+        input.id = id;
+
+        const saved = savedAnswers[`s${idx}_q${qidx}`];
+        if (saved === choice.key) input.checked = true;
+
+        input.addEventListener("change", () => {
+          computeSection(idx);
+          markUnsaved();
+        });
+
+        const text = document.createTextNode(` ${choice.label} `);
+        const span = document.createElement("span");
+        span.className = "points-info";
+        span.textContent = `(${pts} pts)`;
+
+        label.appendChild(input);
+        label.appendChild(text);
+        label.appendChild(span);
+        radioDiv.appendChild(label);
+      });
+
+      row.appendChild(qText);
+      row.appendChild(radioDiv);
+      content.appendChild(row);
+    });
+
+    const footer = document.createElement("div");
+    footer.className = "section-footer";
+    footer.innerHTML = `
+      <div class="score-box" id="score-text-${idx}">Score : 0 / ${section.maxPoints}</div>
+      <div class="progress-bar-bg"><div class="progress-fill" id="progress-${idx}"></div></div>
+    `;
+
+    content.appendChild(footer);
+    card.appendChild(header);
+    card.appendChild(content);
+    container.appendChild(card);
+
+    header.addEventListener("click", () => content.classList.toggle("open"));
+  });
+
+  document.getElementById("calculateAllBtn").onclick = computeAll;
+  document.getElementById("resetAllBtn").onclick = resetAll;
+  document.getElementById("saveBtn").onclick = saveDiagnostic;
+  document.getElementById("printBtn").onclick = () => window.print();
+
+  computeAll();
+}
+
+function computeSection(idx) {
+  const section = sectionsData[idx];
+  const contentDiv = document.getElementById(`content-${idx}`);
+  let total = 0;
+
+  section.questions.forEach((q, qidx) => {
+    const selected = contentDiv.querySelector(`input[name="s${idx}_q${qidx}"]:checked`);
+    if (!selected) return;
+    const choice = choices.find(c => c.key === selected.value);
+    total += pointsFor(q, choice);
+  });
+
+  const percent = section.maxPoints ? (total / section.maxPoints) * 100 : 0;
+  document.getElementById(`badge-${idx}`).textContent = `${total} / ${section.maxPoints} pts`;
+  document.getElementById(`score-text-${idx}`).textContent = `Score : ${total} / ${section.maxPoints}`;
+  document.getElementById(`progress-${idx}`).style.width = `${Math.min(percent, 100)}%`;
+  updateGlobalAndSummary();
+}
+
+function computeAll() {
+  sectionsData.forEach((_, idx) => computeSection(idx));
+}
+
+function collectAnswers() {
+  const answers = {};
+  sectionsData.forEach((section, idx) => {
+    section.questions.forEach((q, qidx) => {
+      const selected = document.querySelector(`input[name="s${idx}_q${qidx}"]:checked`);
+      if (selected) answers[`s${idx}_q${qidx}`] = selected.value;
+    });
+  });
+  return answers;
+}
+
+function updateGlobalAndSummary() {
+  let grandTotal = 0;
+  let grandMax = 0;
+  const summaryBody = document.getElementById("summaryBody");
+  summaryBody.innerHTML = "";
+
+  sectionsData.forEach((section, idx) => {
+    const badgeText = document.getElementById(`badge-${idx}`)?.textContent || "0 / 0";
+    const score = parseInt(badgeText.split("/")[0], 10) || 0;
+    grandTotal += score;
+    grandMax += section.maxPoints;
+
+    const perc = section.maxPoints ? ((score / section.maxPoints) * 100).toFixed(1) : "0.0";
+    summaryBody.insertAdjacentHTML("beforeend", `
+      <tr>
+        <td>${section.name}</td>
+        <td>${score}</td>
+        <td>${section.maxPoints}</td>
+        <td>${perc}%</td>
+      </tr>
+    `);
+  });
+
+  document.getElementById("totalScore").textContent = grandTotal;
+  document.getElementById("totalMax").textContent = grandMax;
+  document.getElementById("globalPercent").textContent = grandMax ? ((grandTotal / grandMax) * 100).toFixed(1) : "0.0";
+}
+
+function markUnsaved() {
+  document.getElementById("saveStatus").textContent = "Modifications non sauvegardées";
+}
+
+async function saveDiagnostic() {
+  computeAll();
+  const payload = {
+    answers: collectAnswers(),
+    total_score: Number(document.getElementById("totalScore").textContent) || 0,
+    total_max: Number(document.getElementById("totalMax").textContent) || 3000,
+    percent: Number(document.getElementById("globalPercent").textContent) || 0
+  };
+
+  const status = document.getElementById("saveStatus");
+  status.textContent = "Sauvegarde en cours...";
+
+  const response = await fetch(`/api/diagnostic/${diagnosticId}/save`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload)
+  });
+
+  const result = await response.json();
+  if (result.ok) {
+    status.textContent = "✅ Sauvegardé : " + result.saved_at;
+  } else {
+    status.textContent = "❌ Erreur : " + result.error;
+  }
+}
+
+function resetAll() {
+  if (!confirm("Réinitialiser toutes les réponses de ce diagnostic ?")) return;
+  document.querySelectorAll('input[type="radio"]').forEach(r => r.checked = false);
+  computeAll();
+  markUnsaved();
+}
+
+buildUI();
+</script>
+{% endblock %}

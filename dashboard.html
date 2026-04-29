@@ -1,0 +1,45 @@
+{% extends "layout.html" %}
+{% block content %}
+<section class="hero">
+  <div>
+    <h1>Diagnostics LAVINA</h1>
+    <p>Créer, consulter et reprendre les diagnostics maintenance sauvegardés.</p>
+  </div>
+  <a class="button primary" href="{{ url_for('new_diagnostic') }}">+ Nouveau diagnostic</a>
+</section>
+
+<section class="card">
+  <h2>Liste des diagnostics</h2>
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Titre</th><th>Société</th><th>Site</th><th>Auditeur</th><th>Score</th><th>%</th><th>Utilisateur</th><th>Modifié</th><th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for d in diagnostics %}
+        <tr>
+          <td><strong>{{ d.title }}</strong></td>
+          <td>{{ d.company or "-" }}</td>
+          <td>{{ d.site or "-" }}</td>
+          <td>{{ d.auditor or "-" }}</td>
+          <td>{{ d.total_score }} / {{ d.total_max }}</td>
+          <td>{{ "%.1f"|format(d.percent) }}%</td>
+          <td>{{ d.username }}</td>
+          <td>{{ d.updated_at }}</td>
+          <td class="actions-cell">
+            <a class="button small" href="{{ url_for('edit_diagnostic', diagnostic_id=d.id) }}">Ouvrir</a>
+            <form method="post" action="{{ url_for('delete_diagnostic', diagnostic_id=d.id) }}" onsubmit="return confirm('Supprimer ce diagnostic ?')">
+              <button class="danger small">Supprimer</button>
+            </form>
+          </td>
+        </tr>
+        {% else %}
+        <tr><td colspan="9">Aucun diagnostic pour le moment.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</section>
+{% endblock %}
