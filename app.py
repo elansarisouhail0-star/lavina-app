@@ -144,7 +144,51 @@ def new_diagnostic():
         return redirect(url_for("dashboard"))
 
     return render_template("new_diagnostic.html")
+@app.route("/users")
+def users():
+    user = current_user()
+    if not user:
+        return redirect(url_for("login"))
+    return render_template("users.html", users=[])
 
+
+def can_access_diagnostic(user, diagnostic):
+    return diagnostic and (user["role"] == "admin" or diagnostic["user_id"] == user["id"])
+
+
+@app.route("/diagnostic/<int:diagnostic_id>")
+def edit_diagnostic(diagnostic_id):
+    user = current_user()
+    if not user:
+        return redirect(url_for("login"))
+
+    conn = db()
+    diagnostic = conn.execute(
+        "SELECT * FROM diagnostics WHERE id = ?", 
+        (diagnostic_id,)
+    ).fetchone()
+    conn.close()
+
+    if not diagnostic:
+        flash("Diagnostic introuvable.", "error")
+        return redirect(url_for("dashboard"))
+
+    return render_template("diagnostic.html", diagnostic=diagnostic)
+
+
+@app.route("/diagnostic/<int:diagnostic_id>/delete", methods=["POST"])
+def delete_diagnostic(diagnostic_id):
+    user = current_user()
+    if not user:
+        return redirect(url_for("login"))
+
+    conn = db()
+    conn.execute("DELETE FROM diagnostics WHERE id = ?", (diagnostic_id,))
+    conn.commit()
+    conn.close()
+
+    flash("Diagnostic supprimé.", "success")
+    return redirect(url_for("dashboard"))
 # -----------------------------
 # MAIN (Railway)
 # -----------------------------
