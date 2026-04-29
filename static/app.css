@@ -176,3 +176,45 @@ if __name__ == "__main__":
     init_db()
     port = int(os.environ.get("PORT", 5000))
     app.run(host="0.0.0.0", port=port)
+/* Correction lisibilité page diagnostic */
+.diagnostic-hero h1,
+.diagnostic-hero p,
+#sectionsContainer,
+#sectionsContainer *,
+.section-card,
+.section-card *,
+.question-text,
+.radio-group label,
+.score-box,
+.card,
+.card * {
+  color: #ffffff !important;
+}
+
+.section-card,
+.card {
+  background: rgba(255, 255, 255, 0.08) !important;
+  border: 1px solid rgba(255, 255, 255, 0.18) !important;
+}
+
+.question-row {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.15) !important;
+}
+
+.radio-group label {
+  background: rgba(255, 255, 255, 0.12) !important;
+  border: 1px solid rgba(255, 255, 255, 0.25) !important;
+}
+
+.points-info {
+  color: #dbeafe !important;
+}
+
+.badge-score {
+  color: #ffffff !important;
+  background: #ff6b18 !important;
+}
+
+.progress-bar-bg {
+  background: rgba(255, 255, 255, 0.25) !important;
+}
