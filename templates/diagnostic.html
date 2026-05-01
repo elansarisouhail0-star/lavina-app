@@ -1,5 +1,52 @@
 {% extends "layout.html" %}
 {% block content %}
+<style>
+.page, main, body {
+  background: linear-gradient(135deg,#06172d,#172554,#1e293b) !important;
+  color: white !important;
+}
+
+.page * {
+  color: white !important;
+}
+
+input,
+button {
+  color: black !important;
+}
+
+.primary,
+#saveBtn,
+button.primary {
+  background: #ff6b18 !important;
+  color: white !important;
+}
+
+.danger,
+#resetAllBtn {
+  background: #dc2626 !important;
+  color: white !important;
+}
+
+.section-card,
+.card,
+.diagnostic-hero,
+.toolbar {
+  background: rgba(255,255,255,0.12) !important;
+  border-radius: 24px !important;
+  padding: 20px !important;
+  margin-bottom: 20px !important;
+}
+
+.radio-group label {
+  background: rgba(255,255,255,0.18) !important;
+  padding: 8px 12px !important;
+  border-radius: 20px !important;
+  margin: 5px !important;
+  display: inline-flex !important;
+  gap: 6px !important;
+}
+</style>
 <section class="diagnostic-hero">
   <div>
     <h1>{{ diagnostic.title }}</h1>
