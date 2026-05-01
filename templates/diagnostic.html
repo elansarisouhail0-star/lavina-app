@@ -1,22 +1,46 @@
 {% extends "layout.html" %}
 {% block content %}
-<section class="diagnostic-hero">
+<section class="audit-hero">
+  <div class="audit-logo">⚙️</div>
   <div>
-    <h1>{{ diagnostic.title }}</h1>
-    <p>🏭 {{ diagnostic.company or "Société non renseignée" }} · 📍 {{ diagnostic.site or "Site non renseigné" }} · 👤 {{ diagnostic.auditor or "Auditeur non renseigné" }}</p>
-  </div>
-  <div class="score-total">
-    <span id="totalScore">0</span><small>/ <span id="totalMax">3000</span> pts</small>
-    <strong><span id="globalPercent">0.0</span>%</strong>
+    <h1>Audit Maintenance Industrielle</h1>
+    <p>Méthode LAVINA · Diagnostic des 12 axes · Calcul automatique avec 5 niveaux de réponse</p>
+    <div class="chips">
+      <span>⚙️ Machines</span>
+      <span>🔧 Maintenance</span>
+      <span>🏭 Industrie</span>
+      <span>📊 GMAO</span>
+    </div>
   </div>
 </section>
 
-<section class="toolbar">
-  <button class="primary" id="saveBtn">💾 Sauvegarder</button>
-  <button class="secondary" id="calculateAllBtn">📈 Recalculer</button>
-  <button class="secondary" id="printBtn">🖨️ Imprimer / PDF</button>
-  <button class="danger" id="resetAllBtn">⟳ Réinitialiser les réponses</button>
-  <span id="saveStatus"></span>
+<section class="audit-grid">
+  <div class="score-panel">
+    <h3>Score global</h3>
+    <div class="big-score">
+      <span id="totalScore">0</span>
+      <small>/ <span id="totalMax">3000</span> pts</small>
+      <strong>📈 <span id="globalPercent">0.0</span>%</strong>
+    </div>
+    <div class="toolbar">
+      <button class="primary" id="calculateAllBtn">Calculer tous les axes</button>
+      <button class="secondary" id="resetAllBtn">Réinitialiser</button>
+      <button class="primary" id="saveBtn">💾 Sauvegarder</button>
+      <button class="secondary" id="printBtn">🖨️ Imprimer / PDF</button>
+      <span id="saveStatus"></span>
+    </div>
+  </div>
+
+  <div class="bareme-panel">
+    <h3>🧭 Barème de réponse</h3>
+    <div class="bareme-grid">
+      <div><b>Oui</b> : conformité forte</div>
+      <div><b>Plutôt oui</b> : conformité partielle</div>
+      <div><b>Ni oui, ni non</b> : niveau intermédiaire</div>
+      <div><b>Plutôt non</b> : faiblesse partielle</div>
+      <div><b>Non</b> : non conforme</div>
+    </div>
+  </div>
 </section>
 
 <div id="sectionsContainer"></div>
