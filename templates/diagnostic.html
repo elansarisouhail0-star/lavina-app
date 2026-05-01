@@ -308,16 +308,19 @@ function buildUI() {
 
     const header = document.createElement("div");
     header.className = "section-header";
-    header.innerHTML = `
-      <div class="section-title">
-        <span class="section-icon">${sectionIcons[idx] || "⚙️"}</span>
-        <span>${section.name}</span>
-      </div>
-      <span class="badge-score" id="badge-${idx}">0 / ${section.maxPoints} pts</span>
-    `;
+   header.innerHTML = `
+  <div class="section-title">
+    <span class="section-icon">${sectionIcons[idx] || "⚙️"}</span>
+    <span>${section.name}</span>
+  </div>
+  <div class="section-actions">
+    <span class="badge-score" id="badge-${idx}">0 / ${section.maxPoints} pts</span>
+    <span class="toggle-icon">⌄</span>
+  </div>
+`;
 
     const content = document.createElement("div");
-    content.className = "section-content open";
+    content.className = "section-content";
     content.id = `content-${idx}`;
 
     section.questions.forEach((q, qidx) => {
