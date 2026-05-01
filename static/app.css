@@ -202,3 +202,111 @@ td{
   .question-row{grid-template-columns:1fr!important}
   .radio-group{grid-template-columns:1fr!important}
 }
+.section-card{
+  padding:0!important;
+  overflow:hidden!important;
+}
+
+.section-header{
+  display:flex!important;
+  justify-content:space-between!important;
+  align-items:center!important;
+  padding:24px 30px!important;
+  cursor:pointer!important;
+}
+
+.section-title{
+  display:flex!important;
+  align-items:center!important;
+  gap:16px!important;
+  font-size:22px!important;
+  font-weight:900!important;
+}
+
+.section-icon{
+  width:46px!important;
+  height:46px!important;
+  min-width:46px!important;
+  border-radius:16px!important;
+  background:#0f172a!important;
+  color:white!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  font-size:22px!important;
+}
+
+.section-actions{
+  display:flex!important;
+  align-items:center!important;
+  gap:14px!important;
+}
+
+.toggle-icon{
+  background:#0f172a!important;
+  color:white!important;
+  width:34px!important;
+  height:34px!important;
+  border-radius:50%!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  font-weight:900!important;
+}
+
+.section-content{
+  display:none;
+  padding:0 30px 26px!important;
+}
+
+.section-content.open{
+  display:block!important;
+}
+
+.question-row{
+  grid-template-columns:1.1fr 1.9fr!important;
+  padding:14px 0!important;
+  gap:18px!important;
+}
+
+.question-text{
+  font-size:15px!important;
+  line-height:1.45!important;
+}
+
+.radio-group{
+  grid-template-columns:repeat(5,minmax(120px,1fr))!important;
+}
+
+.radio-group label{
+  min-height:44px!important;
+  font-size:13px!important;
+  padding:8px!important;
+}
+
+.points-info{
+  font-size:12px!important;
+}
+
+.section-footer{
+  margin-top:18px!important;
+}
+
+@media(max-width:900px){
+  .section-header{
+    align-items:flex-start!important;
+    gap:14px!important;
+  }
+
+  .section-title{
+    font-size:18px!important;
+  }
+
+  .radio-group{
+    grid-template-columns:1fr!important;
+  }
+
+  .question-row{
+    grid-template-columns:1fr!important;
+  }
+}
