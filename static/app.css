@@ -2,102 +2,144 @@
 body{
   margin:0;
   font-family:Arial,sans-serif;
-  background:linear-gradient(135deg,#06172d,#172554,#1e293b);
-  color:#fff;
+  background:linear-gradient(135deg,#063044,#172554,#332640);
+  color:#0f172a;
 }
 .topbar{
   background:#0f172a;
   color:white;
-  padding:18px 28px;
+  padding:18px 36px;
   display:flex;
   justify-content:space-between;
   align-items:center;
 }
-.brand{font-weight:900;font-size:24px}
+.brand{font-size:26px;font-weight:900}
 .navlinks a,.user-chip{
   color:white;
   text-decoration:none;
   background:rgba(255,255,255,.12);
-  padding:10px 16px;
-  border-radius:25px;
-  margin-left:8px;
-}
-.page{padding:32px 24px}
-.hero,.card,.login-card,.diagnostic-hero,.toolbar,.section-card{
-  background:#fff;
-  color:#0f172a;
+  padding:12px 20px;
   border-radius:28px;
-  padding:28px;
-  margin-bottom:24px;
-  box-shadow:0 18px 40px rgba(0,0,0,.18);
+  margin-left:10px;
+  font-weight:700;
 }
-h1{font-size:42px;margin:0 0 12px}
-p{color:#526985;font-size:18px}
-.button,.primary{
-  background:#ff6b18;
-  color:white;
-  padding:14px 24px;
+.page{
+  padding:34px 28px;
+  max-width:1900px;
+  margin:auto;
+}
+.diagnostic-hero,.hero,.card,.toolbar,.section-card{
+  background:linear-gradient(135deg,#f8fbff,#eef6ff);
+  color:#0f172a!important;
+  border-radius:34px;
+  padding:32px;
+  margin-bottom:26px;
+  box-shadow:0 18px 45px rgba(0,0,0,.18);
+}
+.diagnostic-hero h1,.hero h1{
+  font-size:46px;
+  color:#0f172a!important;
+  margin:0 0 18px;
+}
+.diagnostic-hero p,.hero p{
+  color:#526985!important;
+  font-size:21px;
+}
+.toolbar{
+  display:flex;
+  gap:12px;
+  align-items:center;
+}
+button,.button{
+  border:0;
+  cursor:pointer;
+  font-weight:800;
   border-radius:18px;
+  padding:14px 22px;
   text-decoration:none;
-  border:none;
-  font-weight:bold;
 }
-.danger{
-  background:#dc2626;
-  color:white;
-  padding:10px 16px;
-  border:none;
-  border-radius:14px;
+.primary,#saveBtn{
+  background:#ff6b18!important;
+  color:white!important;
+}
+.danger,#resetAllBtn{
+  background:#dc2626!important;
+  color:white!important;
+}
+.section-header{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  font-size:22px;
+  font-weight:900;
+  color:#0f172a!important;
+}
+.badge-score{
+  background:#eef6ff;
+  border:1px solid #bfdbfe;
+  color:#0b55d9!important;
+  padding:10px 18px;
+  border-radius:22px;
+  font-weight:900;
+}
+.question-row{
+  display:grid;
+  grid-template-columns:1.2fr 1.8fr;
+  gap:20px;
+  padding:16px 0;
+  border-bottom:1px dashed #dbeafe;
+}
+.question-text{
+  color:#0f172a!important;
+  font-weight:800;
+}
+.radio-group{
+  display:grid;
+  grid-template-columns:repeat(5,1fr);
+  gap:10px;
+}
+.radio-group label{
+  color:#0f172a!important;
+  background:#f8fbff;
+  border:1px solid #bfdbfe;
+  border-radius:16px;
+  padding:10px;
+  text-align:center;
+  font-weight:600;
+}
+.points-info{color:#334155!important}
+input[type=radio]{accent-color:#2563eb}
+.score-box{
+  background:#0f172a;
+  color:white!important;
+  padding:12px 20px;
+  border-radius:18px;
+  font-weight:900;
+  display:inline-block;
+}
+.progress-bar-bg{
+  background:#dbeafe;
+  height:12px;
+  border-radius:20px;
+  overflow:hidden;
+  margin-top:18px;
+}
+.progress-fill{
+  background:linear-gradient(90deg,#2563eb,#06b6d4);
+  height:100%;
 }
 table{width:100%;border-collapse:collapse}
-th{background:#0f172a;color:white;padding:14px}
-td{padding:14px;border-bottom:1px solid #ddd;color:#0f172a}
-input{padding:12px;border-radius:10px;border:1px solid #ccc;margin:6px}
-.question-text,.radio-group label,.score-box{color:#0f172a}
-.radio-group label{display:inline-block;margin:6px}
-/* FIX PAGE DIAGNOSTIC - LISIBILITÉ */
-body,
-.diagnostic-hero,
-.diagnostic-hero *,
-#sectionsContainer,
-#sectionsContainer *,
-.section-card,
-.section-card *,
-.question-row,
-.question-row *,
-.question-text,
-.radio-group,
-.radio-group label,
-.points-info {
-  color: white !important;
+th{
+  background:#0f172a;
+  color:white;
+  padding:14px;
 }
-
-.section-card {
-  background: rgba(255,255,255,0.10) !important;
-  border: 1px solid rgba(255,255,255,0.25) !important;
-  border-radius: 22px !important;
-  padding: 20px !important;
-  margin-bottom: 18px !important;
+td{
+  color:#0f172a;
+  padding:14px;
+  border-bottom:1px solid #e5e7eb;
 }
-
-.radio-group label {
-  background: rgba(255,255,255,0.15) !important;
-  padding: 8px 12px !important;
-  border-radius: 20px !important;
-  margin: 5px !important;
-  display: inline-flex !important;
-  gap: 6px !important;
-}
-
-input[type="radio"] {
-  accent-color: #ff6b18 !important;
-}
-
-.diagnostic-hero h1 {
-  color: white !important;
-  opacity: 1 !important;
-}
-
-.diagnostic-hero p {
-  color: #dbeafe !important;
+@media(max-width:900px){
+  .question-row{grid-template-columns:1fr}
+  .radio-group{grid-template-columns:1fr}
 }
