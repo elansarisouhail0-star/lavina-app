@@ -306,7 +306,6 @@ function buildUI() {
 
     header.addEventListener("click", () => {
       content.classList.toggle("open");
-
       const icon = header.querySelector(".toggle-icon");
       if (icon) {
         icon.textContent = content.classList.contains("open") ? "⌃" : "⌄";
