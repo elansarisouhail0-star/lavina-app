@@ -143,3 +143,62 @@ td{
   .question-row{grid-template-columns:1fr}
   .radio-group{grid-template-columns:1fr}
 }
+.audit-hero,.score-panel,.bareme-panel,.section-card{
+  background:linear-gradient(135deg,#f8fbff,#eef6ff)!important;
+  color:#0f172a!important;
+  border-radius:34px!important;
+  padding:32px!important;
+  margin-bottom:26px!important;
+  box-shadow:0 18px 45px rgba(0,0,0,.18)!important;
+}
+.audit-hero{display:flex;gap:24px;align-items:center}
+.audit-logo{
+  width:90px;height:90px;border-radius:24px;
+  background:#1d4ed8;color:white;font-size:54px;
+  display:grid;place-items:center;
+}
+.audit-hero h1{font-size:46px;margin:0;color:#0f172a!important}
+.audit-hero p{font-size:20px;color:#334155!important}
+.chips span{
+  display:inline-block;background:#0f172a;color:white;
+  padding:12px 20px;border-radius:28px;margin:8px 8px 0 0;
+  font-weight:900;
+}
+.audit-grid{display:grid;grid-template-columns:1.4fr .9fr;gap:26px}
+.big-score{display:flex;align-items:center;gap:22px}
+.big-score>span{font-size:70px;font-weight:900;color:#0f172a!important}
+.big-score small{font-size:24px;font-weight:900;color:#64748b!important}
+.big-score strong{
+  background:linear-gradient(90deg,#2563eb,#06b6d4);
+  color:white!important;padding:16px 24px;border-radius:28px;
+}
+.bareme-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.bareme-grid div{
+  background:#f8fbff;border:1px solid #dbeafe;
+  padding:14px;border-radius:18px;color:#0f172a!important;
+}
+.section-card *,.question-text,.radio-group label,.points-info{
+  color:#0f172a!important;
+}
+.question-row{
+  display:grid!important;
+  grid-template-columns:1.2fr 1.8fr!important;
+  gap:20px!important;
+  border-bottom:1px dashed #dbeafe!important;
+}
+.radio-group{
+  display:grid!important;
+  grid-template-columns:repeat(5,1fr)!important;
+  gap:10px!important;
+}
+.radio-group label{
+  background:#f8fbff!important;
+  border:1px solid #bfdbfe!important;
+  border-radius:16px!important;
+  padding:10px!important;
+}
+@media(max-width:900px){
+  .audit-grid{grid-template-columns:1fr}
+  .question-row{grid-template-columns:1fr!important}
+  .radio-group{grid-template-columns:1fr!important}
+}
